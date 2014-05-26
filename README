@@ -1,0 +1,42 @@
+# Sharemind Player
+## A tool for auditing Sharemind Application Server audit logs.
+
+This tool can be used to audit the computations of Sharemind miners via
+analyzing the audit log files they produce. All individual protocols are also
+simulated and results are automatically verified by comparing the simulation
+result to the values contained in the audit log.
+
+### Dependencies
+
+* Python 3
+* [Kivy 1.8](http://kivy.org/)
+	* In Debian this means installing the `python3-kivy` package.
+
+### Usage without installing (on Unix-like systems)
+
+The command line tool:
+> env PYTHONPATH=. scripts/smplayer <log-file>
+
+The GUI tool:
+> env PYTHONPATH=. scripts/smplayer-gui
+
+### Installation
+
+> ./setup.py install
+
+### Usage
+
+The command line tool:
+> smplayer <log-file>
+
+The GUI tool:
+> smplayer-gui
+
+Then click "Load audit log" to select an audit log to analyze.
+
+There is an example log file at `test/data/audit.log`, which can be used to
+test out the program. It should display everything as "ok".
+
+### Run unit tests
+
+> ./setup.py test

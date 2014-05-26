@@ -1,0 +1,85 @@
+#!/usr/bin/env python3
+
+"""
+Copyright (c) 2014, Cybernetica AS, STACC
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+3. Neither the name of the copyright holder nor the names of its contributors
+   may be used to endorse or promote products derived from this software
+   without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+"""
+
+import sys
+
+import smplayer.core as smplayer
+import smplayer.core.protocol as smprotocol
+
+def failure_reason(protocol):
+    if isinstance(protocol, smprotocol.Protocol):
+        return "expected output {p.output} and send {p.send}, " \
+                "but got {r.output} and {r.send}".format(p=protocol, r=protocol.result)
+    if isinstance(protocol, smprotocol.Block):
+        return "expected output {0}, but got {1}".format(protocol.output, protocol.result)
+    else:
+        return "unknown class, cannot find reason"
+
+def usage():
+    print("Usage: %s <log-file>".format(sys.argv[0]))
+    sys.exit(1)
+
+def main():
+    if len(sys.argv) < 2:
+        usage()
+
+    filename = sys.argv[1]
+    player = smplayer.SMPlayer()
+    player.open(filename)
+
+    if player.verify():
+        print("Verification succeeded.")
+
+        mh = player.hash()
+        print("Message hashes:")
+        print("  Messages sent to the previous node: %s" % mh.send_prev)
+        print("  Messages sent to the next node: %s" % mh.send_next)
+        print("  Messages sent to remote nodes: %s" % mh.send_remote)
+        print("  Messages received from the previous node: %s" % mh.recv_prev)
+        print("  Messages received from the next node: %s" % mh.recv_next)
+        print("  Messages received from remote computing nodes: %s" % mh.recv_computing)
+
+        return
+
+    print("Verification failed!")
+    if len(player.protocols) == 0:
+        print("No protocols in log file")
+        return
+
+    for protocol in player.protocols:
+        if not protocol.verify():
+            print("{0} does not verify:".format(protocol.__class__.__name__), )
+            print(failure_reason(protocol))
+
+if __name__ == "__main__":
+    main()
