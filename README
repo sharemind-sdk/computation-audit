@@ -15,7 +15,7 @@ result to the values contained in the audit log.
 ### Usage without installing (on Unix-like systems)
 
 The command line tool:
-> env PYTHONPATH=. scripts/smplayer <log-file>
+> env PYTHONPATH=. scripts/smplayer &lt;log-file&gt;
 
 The GUI tool:
 > env PYTHONPATH=. scripts/smplayer-gui
@@ -27,7 +27,7 @@ The GUI tool:
 ### Usage
 
 The command line tool:
-> smplayer <log-file>
+> smplayer &lt;log-file&gt;
 
 The GUI tool:
 > smplayer-gui
